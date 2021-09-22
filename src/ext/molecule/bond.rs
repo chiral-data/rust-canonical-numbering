@@ -33,12 +33,12 @@ impl Bond {
         self.is_breaking_symmetry = true;
     }
 
-    pub fn set_kind_value(&mut self, numbering: &Vec<usize>, vertex_pair: &(usize, usize)) { // for reduced graph, connection to different part of the custom group should be differenciated. Otherwise, it wiil create new symmetry.
-        let vertex_weigh: usize = match numbering[vertex_pair.0] > numbering[vertex_pair.1] {
+    pub fn set_kind_value(&mut self, numbering: &Vec<usize>, vertex_pair: &(usize, usize)) { // for reduced graph, connection to different part of the custom group should be differenciated. Otherwise, new symmetry will be created.
+        let vertex_weight: usize = match numbering[vertex_pair.0] > numbering[vertex_pair.1] {
             true => numbering[vertex_pair.1] * config::MAX_COUNT_OF_ATOMS_IN_A_MOLECULE + numbering[vertex_pair.0],
             false => numbering[vertex_pair.0] * config::MAX_COUNT_OF_ATOMS_IN_A_MOLECULE + numbering[vertex_pair.1]
         };
-        self.kind_value = vertex_weigh * 10 + self.bond_type();
+        self.kind_value = vertex_weight * 10 + self.bond_type();
     }
 }
 
