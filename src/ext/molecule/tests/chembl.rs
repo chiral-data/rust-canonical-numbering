@@ -1,5 +1,5 @@
-// Test on Database ChemBL
-//
+/// Test on Database ChemBL
+///
 
 use std::io::prelude::*;
 

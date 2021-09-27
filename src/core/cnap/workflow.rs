@@ -71,9 +71,9 @@ pub fn run<T: core::graph::VertexExtendableHash>(
     orbits_symmetry: &mut Vec<core::orbit_ops::Orbit>,
 ) -> Result<(), ErrorCNAP> {
     if is_computable(orbits_residual) { // Brutal-force CNAP
-        if cfg!(debug_assertions) {
-            println!("CNAP Computable {:?}", orbits_residual);
-        }
+        // if cfg!(debug_assertions) {
+        //     println!("CNAP Computable {:?}", orbits_residual);
+        // }
 
         get_symmetric_orbits(orbits_residual, edges, length, orbits_symmetry);
         Ok(())
