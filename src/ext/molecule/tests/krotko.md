@@ -21,7 +21,7 @@ As stated by the paper, "This means that regardless of the accuracy of the symme
 
 ## Comparison by examples
 
-I have made an experiment on the examples from this paper by using our approach.
+I have made an experiment on some examples from this paper by using our approach.
 
 ### C12C3C1C3C1C3C2C13
 This is the example of figure 2. Our approach gives the right answer of 2 symmetrical classes with no specific atom invariant needed.

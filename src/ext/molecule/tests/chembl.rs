@@ -1,33 +1,31 @@
 /// Test on Database ChemBL
 ///
 
-use std::io::prelude::*;
-
-static CHEMBL_FILE: &str = "/Users/qw/Documents/data/ChEMBL/chembl_28_chemreps.txt";
-
-fn read_lines<P>(filename: P) -> std::io::Result<std::io::Lines<std::io::BufReader<std::fs::File>>>
-where P: AsRef<std::path::Path>, {
-    let file = std::fs::File::open(filename)?;
-    Ok(std::io::BufReader::new(file).lines())
-}
-
-fn clean_smiles(smiles_origin: &String) -> String {
-    let mut parts: Vec<&str> = smiles_origin.split('.').collect();
-    match parts.len() {
-        1 => String::from(parts[0]),
-        0 => panic!("Invalid smiles!!!"),
-        _ => {
-            parts.sort_by(|a, b| a.len().cmp(&b.len()));
-            String::from(parts[parts.len()-1])
-        }
-    }
-}
-
 #[cfg(test)]
 mod test_chembl {
-    use super::*;
     use crate::ext::molecule;
     use crate::core;
+    use std::io::prelude::*;
+
+    static CHEMBL_FILE: &str = "/Users/qw/Documents/data/ChEMBL/chembl_28_chemreps.txt";
+
+    fn read_lines<P>(filename: P) -> std::io::Result<std::io::Lines<std::io::BufReader<std::fs::File>>>
+    where P: AsRef<std::path::Path>, {
+        let file = std::fs::File::open(filename)?;
+        Ok(std::io::BufReader::new(file).lines())
+    }
+
+    fn clean_smiles(smiles_origin: &String) -> String {
+        let mut parts: Vec<&str> = smiles_origin.split('.').collect();
+        match parts.len() {
+            1 => String::from(parts[0]),
+            0 => panic!("Invalid smiles!!!"),
+            _ => {
+                parts.sort_by(|a, b| a.len().cmp(&b.len()));
+                String::from(parts[parts.len()-1])
+            }
+        }
+    }
 
     #[test]
     fn chembl() {

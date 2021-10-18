@@ -110,13 +110,17 @@ pub fn run<T: core::graph::VertexExtendableHash>(
         *numbering = vec![vv.len(); vv.all_len()];
         orbits_output.clear();
         partition_vertices_with::<T>(vv.valid_indexes(), vv.all_vertices(), &fixed_hash_values, numbering, orbits_output);
+        println!("fixed: {},{}", fixed_hash_values[0], fixed_hash_values[5]);
     }
+
+    println!("givp run: {:?}", numbering);
 
     // do GIAP again
     // case 469: COc1ccc(C(=O)C[n+]2c(C)n(Cc3c4c(cc5c3OCC5)OCC4)c3ccccc32)cc1
     let orbits_to_be_partitioned = orbits_output.clone();
     orbits_output.clear();
     partition_vertices_with_extendable_hash_value::<T>(vv.all_vertices(), &numbering.clone(), &orbits_to_be_partitioned, numbering, orbits_output);
+    println!("givp run: {:?}", numbering);
 }
 
 #[cfg(test)]
@@ -133,10 +137,10 @@ mod test_givp_workflow {
             ("c1ccccc1CN", vec![vec![0, 4], vec![1, 3]]),
             (
                 "COc1ccc(C(=O)C[n+]2c(C)n(Cc3c4c(cc5c3OCC5)OCC4)c3ccccc32)cc1",
-                vec![vec![3, 33], vec![4, 32]],  // chembl 469, if no 2nd round givp, there will be [21, 42]
+                vec![vec![3, 33], vec![4, 32]],  // chembl 469, if no 2nd round givp, there will be another orbit [21, 24]
             ),
             (
-                r#"Cc1[nH]c2ccccc2c1/C=C1\SC(=N)N(c2nccs2)C1=O"#, // 926178 givp [], cnap [...], 2-times givp bug 
+                r#"Cc1[nH]c2ccccc2c1/C=C1\SC(=N)N(c2nccs2)C1=O"#, // 926178 
                 vec![],
             ),
         ].into_iter().map(|td| (td.0.to_string(), td.1)).collect();

@@ -93,6 +93,10 @@ impl<T: Vertex> VertexVec<T> {
     pub fn all_vertices(&self) -> &Vec<T> {
         &self.vertices
     }
+
+    pub fn all_vertices_mut(&mut self) -> &mut Vec<T> {
+        &mut self.vertices
+    }
 }
 
 impl<T: Vertex> std::ops::Index<usize> for VertexVec<T> {
