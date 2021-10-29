@@ -2,8 +2,9 @@ use crate::core;
 use super::element;
 use super::bond;
 
+/// Hash atom charge
+/// Postive charge value > 200, Neutral = 100, Negative < 100
 const DEFAULT_CHARGE_HASH_VALUE: usize = 100;
-
 fn get_charge_hash_value_from_atom_purr(atom_purr: &purr::graph::Atom) -> usize {
     match &atom_purr.kind {
         purr::feature::AtomKind::Star => DEFAULT_CHARGE_HASH_VALUE,

@@ -110,17 +110,13 @@ pub fn run<T: core::graph::VertexExtendableHash>(
         *numbering = vec![vv.len(); vv.all_len()];
         orbits_output.clear();
         partition_vertices_with::<T>(vv.valid_indexes(), vv.all_vertices(), &fixed_hash_values, numbering, orbits_output);
-        println!("fixed: {},{}", fixed_hash_values[0], fixed_hash_values[5]);
     }
-
-    println!("givp run: {:?}", numbering);
 
     // do GIAP again
     // case 469: COc1ccc(C(=O)C[n+]2c(C)n(Cc3c4c(cc5c3OCC5)OCC4)c3ccccc32)cc1
     let orbits_to_be_partitioned = orbits_output.clone();
     orbits_output.clear();
     partition_vertices_with_extendable_hash_value::<T>(vv.all_vertices(), &numbering.clone(), &orbits_to_be_partitioned, numbering, orbits_output);
-    println!("givp run: {:?}", numbering);
 }
 
 #[cfg(test)]
@@ -143,6 +139,7 @@ mod test_givp_workflow {
                 r#"Cc1[nH]c2ccccc2c1/C=C1\SC(=N)N(c2nccs2)C1=O"#, // 926178 
                 vec![],
             ),
+            ("C(C)(C)CCNCCC(C)(C)", vec![vec![0, 8], vec![1, 2, 9, 10], vec![3, 7], vec![4, 6]]) // bug Issue #1
         ].into_iter().map(|td| (td.0.to_string(), td.1)).collect();
 
 

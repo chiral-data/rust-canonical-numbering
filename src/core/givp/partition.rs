@@ -26,7 +26,6 @@ fn partition_once<T: std::cmp::PartialOrd>(
 
 /// Partition elements recursively according to correlated values
 ///     purely math
-///
 pub fn partition_recursively<T: std::cmp::PartialOrd>(
     indexes: &Vec<usize>,
     values: &Vec<T>,
@@ -57,6 +56,8 @@ pub fn partition_recursively<T: std::cmp::PartialOrd>(
     if part_right.len() > 0 {
         if part_right.len() > 1 {
             partition_recursively::<T>(&part_right, values, current_numbering, numbering, orbits);
+        } else {
+            numbering[part_right[0]] = current_numbering;
         }
     }
 }
