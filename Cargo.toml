@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 purr = "0.9"
+chem = "0.0.2"
+
+[dev-dependencies]
+rand = "0.8.4"

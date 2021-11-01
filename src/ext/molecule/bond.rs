@@ -1,3 +1,8 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use super::config;
 
@@ -26,6 +31,19 @@ impl Bond {
             purr::feature::BondKind::Aromatic => 5,
             purr::feature::BondKind::Up => 1,
             purr::feature::BondKind::Down => 1
+        }
+    }
+
+    pub fn bond_char(&self) -> String {
+        match self.kind {
+            purr::feature::BondKind::Elided => String::from(""),
+            purr::feature::BondKind::Single => String::from(""),
+            purr::feature::BondKind::Double => String::from("="),
+            purr::feature::BondKind::Triple => String::from("#"),
+            purr::feature::BondKind::Quadruple => String::from("$"),
+            purr::feature::BondKind::Aromatic => String::from(""),
+            purr::feature::BondKind::Up => String::from(""),
+            purr::feature::BondKind::Down => String::from("")
         }
     }
 
