@@ -347,7 +347,7 @@ mod test_case_cyclic {
     }
 
     #[test]
-    fn test_molecule_workflow() {
+    fn test_molecules() {
         type ParamType1 = String;
         let test_data: Vec<ParamType1> = vec![
             //

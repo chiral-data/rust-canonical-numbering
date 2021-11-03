@@ -26,6 +26,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "graph-canonicalization"
+version = "0.1.0"
+dependencies = [
+ "chem",
+ "purr",
+ "rand",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -81,15 +90,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d51e9f596de227fda2ea6c84607f5558e196eeaf43c986b724ba4fb8fdf497e7"
 dependencies = [
  "rand_core",
-]
-
-[[package]]
-name = "rust_canonical_numbering"
-version = "0.1.0"
-dependencies = [
- "chem",
- "purr",
- "rand",
 ]
 
 [[package]]

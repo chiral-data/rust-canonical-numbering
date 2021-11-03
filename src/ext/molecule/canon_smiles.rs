@@ -9,7 +9,7 @@
 //! 
 
 use crate::core;
-use crate::core::graph::*;
+use super::atom;
 use super::bond;
 use super::extendable_hash;
 use super::molecule;
@@ -47,6 +47,30 @@ impl chem::smiles_writer::TraitMoleculeForSMILES for molecule::Molecule {
     }
 }
 
+/// Break symmetry to get canonical numbering
+fn get_canon_numbering(
+    vv: &core::graph::VertexVec<atom::Atom>,
+    orbits_givp: &Vec<core::orbit_ops::Orbit>,
+    numbering_givp: &Vec<usize>
+) -> Vec<usize> {
+    if orbits_givp.len() == 0 {
+        numbering_givp.clone()
+    } else {
+        let mut orbits = orbits_givp.clone();
+        let mut numbering = numbering_givp.clone();
+        while orbits.len() > 0 {
+            orbits.sort_by_key(|ob| numbering[ob[0]]);
+            orbits.reverse();
+            for i in 1..orbits[0].len() {
+                numbering[orbits[0][i]] = numbering[orbits[0][0]] - 1;
+            }
+            core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits);
+        }
+
+        numbering
+    }
+}
+
 /// Generate canonical SMILES from the input SMILES string
 ///     stereochemistry is not taken into consideration at the moment
 pub fn get_canon_smiles(smiles: &String) -> String {
@@ -55,16 +79,7 @@ pub fn get_canon_smiles(smiles: &String) -> String {
     let mut orbits: Vec<core::orbit_ops::Orbit> = vec![];
     let mut numbering: Vec<usize> = vec![];
     core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits);
-
-    while orbits.len() > 0 {
-        orbits.sort_by_key(|ob| numbering[ob[0]]);
-        orbits.reverse();
-        for i in 1..orbits[0].len() {
-            numbering[orbits[0][i]] = numbering[orbits[0][0]] - 1;
-        }
-        core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits);
-    }
-
+    numbering = get_canon_numbering(&vv, &orbits, &numbering);
     chem::smiles_writer::write_smiles_for_mol(&mol, &numbering)
 }
 
@@ -105,7 +120,6 @@ mod test_canon_smiles {
             // random test
             for _ in 0..5 {
                 let mol = molecule::Molecule::from_smiles(smiles);
-
                 let times = rng.gen_range(0..5);
                 let mut random_rankings: Vec<usize> = (0..mol.atoms.len()).collect();
                 for _ in 0..times{

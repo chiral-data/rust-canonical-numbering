@@ -1,3 +1,12 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//!
+//! Workflow for Extenion Module: Molecule
+//! 
+
 use crate::core;
 use crate::core::graph::*;
 use super::atom;
@@ -5,16 +14,62 @@ use super::extendable_hash;
 use super::local_symmetry;
 use super::molecule;
 
-pub fn reduced_edges(
+type BondRepresentation = (usize, usize, usize);
+/// Grab all bond information, save to an array of tuples, (first atom id, second atom id, bond representative value)
+fn get_bond_talbe(
     atoms: &Vec<atom::Atom>, 
     atom_indexes: &Vec<usize>
-) -> Vec<(usize, usize, usize)> {
+) -> Vec<BondRepresentation> {
     atom_indexes.iter()
         .map(|&ai| atoms[ai].bonds.iter().map(move |b| (ai, b.tid, b.fixed_hash_value())))
         .flatten()
         .collect()
 }
 
+pub type AtomVec = core::graph::VertexVec<atom::Atom>;
+/// Parse SMILES string to AtomVec
+pub fn smiles_to_atom_vec(smiles: &str) -> AtomVec {
+    let mol = molecule::Molecule::from_smiles(&smiles);
+    let indexes_all: Vec<usize> = (0..mol.atoms.len()).collect();
+    core::graph::VertexVec::init(indexes_all, mol.atoms)
+}
+
+/// Calculate symmetric orbits and atom numbering(ranking) by GIVP
+pub fn symmetry_perception_givp(
+    vv: &AtomVec
+) -> (Vec<core::orbit_ops::Orbit>, Vec<usize>) {
+    let mut numbering: Vec<usize> = vec![];
+    let mut orbits_givp: Vec<core::orbit_ops::Orbit> = vec![];
+    core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_givp);
+
+    (orbits_givp, numbering)
+}
+
+/// Confirm symmetric orbits from GIVP by CNAP
+pub fn symmetry_perception_cnap(
+    vv: &AtomVec,
+    orbits_givp: &Vec<core::orbit_ops::Orbit>,
+    numbering_givp: &Vec<usize>
+) -> Vec<core::orbit_ops::Orbit> {
+    // let (orbits_givp, numbering, vv) = symmetry_perception_givp(&smiles);
+    let mut orbits_cnap: Vec<core::orbit_ops::Orbit> = vec![];
+
+    if orbits_givp.len() != 0 {
+        let mut rg = core::reduce::reducible_graph::ReducibleGraph {
+            vv: vv.clone(),
+            mapping: vec![],
+            boundary_edges: vec![],
+            orbits_after_partition: orbits_givp.to_vec(),
+            numbering: numbering_givp.to_vec()
+        };
+        core::symmetry_perception_by_graph_reduction::<extendable_hash::AtomExtendable>(&mut rg, &mut orbits_cnap, get_bond_talbe, local_symmetry::get_local_symmetric_orbits, 200);
+    }
+
+    core::orbit_ops::orbits_sort(&mut orbits_cnap);
+    orbits_cnap
+}
+
+// a process combined with GIVP and CNAP
 pub fn canonical_numbering_and_symmetry_perception(
     atoms: &Vec<atom::Atom>,
     orbits_after_partition: &mut Vec<core::orbit_ops::Orbit>,
@@ -25,13 +80,7 @@ pub fn canonical_numbering_and_symmetry_perception(
     let vv = core::graph::VertexVec::init(indexes_all, atoms.to_vec()); 
     numbering.clear();
     // calculate and save the givp result for comparison
-    let givp_start = std::time::Instant::now();
     core::givp::run::<extendable_hash::AtomExtendable>(&vv, numbering, orbits_after_partition);
-    let givp_duration = givp_start.elapsed();
-    let count_of_atoms = vv.len();
-    if cfg!(debug_assertions) {
-        // println!("numbering: {:?}", numbering);
-    }
 
     let mut rg = core::reduce::reducible_graph::ReducibleGraph {
         vv: vv,
@@ -41,96 +90,35 @@ pub fn canonical_numbering_and_symmetry_perception(
         numbering: numbering.clone() 
     };
 
-    let cnap_start = std::time::Instant::now();
-    core::symmetry_perception::<extendable_hash::AtomExtendable>(&mut rg, orbits_symmetry, reduced_edges, local_symmetry::get_local_symmetric_orbits, 200);
-    let cnap_duration = cnap_start.elapsed();
-    if cfg!(debug_assertions) {
-        let cnap_required: bool = orbits_after_partition.len() != 0;
-        println!("atom_count\tgivp_duration\tcnap_required\tcnap_duration");
-        println!("{:?}\t{:?}\t{:?}\t{:?}", count_of_atoms, givp_duration, cnap_required, cnap_duration);
-    }
-}
-
-fn symmetry_perception_givp(
-    smiles: &String
-) -> (Vec<core::orbit_ops::Orbit>, Vec<usize>, core::graph::VertexVec<atom::Atom>) {
-    let mol = molecule::Molecule::from_smiles(&smiles);
-    if cfg!(debug_assertions) {
-        println!("{}", mol.smiles_with_index(&smiles, &vec![]));
-    }
-    let indexes_all: Vec<usize> = (0..mol.atoms.len()).collect();
-    let vv = core::graph::VertexVec::init(indexes_all, mol.atoms); 
-    let mut numbering: Vec<usize> = vec![];
-    let mut orbits_after_partition: Vec<core::orbit_ops::Orbit> = vec![];
-    core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
-
-    (orbits_after_partition, numbering, vv)
-}
-
-fn symmetry_perception_cnap(
-    smiles: &String
-) -> Vec<core::orbit_ops::Orbit> {
-    let (orbits_givp, numbering, vv) = symmetry_perception_givp(&smiles);
-    let mut orbits_cnap: Vec<core::orbit_ops::Orbit> = vec![];
-
-    if orbits_givp.len() != 0 {
-        let mut rg = core::reduce::reducible_graph::ReducibleGraph {
-            vv: vv,
-            mapping: vec![],
-            boundary_edges: vec![],
-            orbits_after_partition: orbits_givp.clone(),
-            numbering: numbering
-        };
-        core::symmetry_perception::<extendable_hash::AtomExtendable>(&mut rg, &mut orbits_cnap, reduced_edges, local_symmetry::get_local_symmetric_orbits, 200);
-    }
-
-    core::orbit_ops::orbits_sort(&mut orbits_cnap);
-    orbits_cnap
-}
-
-fn canonical_numbering(
-    smiles: &String,
-) -> Vec<usize> {
-    let mol = molecule::Molecule::from_smiles(&smiles);
-    if cfg!(debug_assertions) {
-        println!("{}", mol.smiles_with_index(&smiles, &vec![]));
-    }
-    let indexes_all: Vec<usize> = (0..mol.atoms.len()).collect();
-    let mut vv = core::graph::VertexVec::init(indexes_all, mol.atoms.clone()); 
-    let mut numbering: Vec<usize> = vec![];
-    let mut orbits_givp: Vec<core::orbit_ops::Orbit> = vec![];
-    core::givp::run::<extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_givp);
-
-    println!("before break-tie: \n{}", mol.smiles_with_index(&smiles, &numbering));
-    println!("numbering: {:?}, {:?}", numbering, orbits_givp);
-
-    while orbits_givp.len() > 0 {
-        let mut symmetrical_atoms: Vec<usize> = orbits_givp.iter()
-            .map(|orbit| orbit[0])
-            .collect();
-        symmetrical_atoms.sort_by_key(|&idx| numbering[idx]);
-        symmetrical_atoms.reverse();
-        if let Some(vi) = vv.all_vertices_mut().get_mut(symmetrical_atoms[0]) {
-            vi.break_symmetry_vertex();
-        }
-        let fixed_hash_values: Vec<core::graph::VertexFixedHashValue> = vv.all_vertices().iter()
-            .map(|v| v.fixed_hash_value())
-            .collect();
-        core::givp::partition_vertices_with::<extendable_hash::AtomExtendable>(&vv.valid_indexes(), vv.all_vertices(), &fixed_hash_values, &mut numbering, &mut orbits_givp);
-    }
-
-    println!("after break-tie: \n{}", mol.smiles_with_index(&smiles, &numbering));
-
-    numbering
+    core::symmetry_perception_by_graph_reduction::<extendable_hash::AtomExtendable>(&mut rg, orbits_symmetry, get_bond_talbe, local_symmetry::get_local_symmetric_orbits, 200);
 }
 
 #[cfg(test)]
 mod test_molecule_workflow {
     use super::*;
     use crate::ext::molecule;
+    
+    #[test]
+    fn test_get_bond_table() {
+        type InputType1 = String;
+        type ReturnType1 = Vec<BondRepresentation>;
+
+        let test_data: Vec<(InputType1, ReturnType1)> = vec![
+            (
+                "C(C)(C)CC=N",
+                vec![(0, 1, 10), (0, 2, 10), (0, 3, 10), (1, 0, 10), (2, 0, 10), (3, 0, 10), (3, 4, 10), (4, 3, 10), (4, 5, 20), (5, 4, 20)]
+            )
+        ].into_iter().map(|s| (s.0.to_string(), s.1)).collect();
+
+        for td in test_data.iter() {
+            let (smiles, bondtable) = td.clone();
+            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            assert_eq!(get_bond_talbe(&mol.atoms, &(0..mol.atoms.len()).collect()), bondtable); 
+        }
+    }
 
     #[test]
-    fn test_examples() {
+    fn test_canonical_numbering_and_symmetry_perception() {
         type InputType1 = String;
         let test_data: Vec<InputType1> = vec![
             // 
@@ -184,31 +172,59 @@ mod test_molecule_workflow {
     }
 
     #[test]
-    fn test_symmetry_perception() {
+    fn test_symmetry_perception_givp() {
         type InputType1 = String;
         type ReturnType1 = Vec<core::orbit_ops::Orbit>;
-        type ReturnType2 = Vec<core::orbit_ops::Orbit>;
-        type ReturnType3 = Vec<usize>;
-        let test_data: Vec<(InputType1, ReturnType1, ReturnType2, ReturnType3)> = vec![
+        type ReturnType2 = Vec<usize>;
+        let test_data: Vec<(InputType1, ReturnType1, ReturnType2)> = vec![
             (
                 "C(C)(C)CCN",
                 vec![vec![1, 2]],
-                vec![vec![1, 2]],
-                vec![6, 2, 1, 5, 4, 3],
+                vec![6, 2, 2, 5, 4, 3],
             ),
             (
                 "C(C)(C)CCNCCC(C)(C)",
                 vec![vec![0, 8], vec![1, 2, 9, 10], vec![3, 7], vec![4, 6]],
+                vec![11, 4, 4, 8, 6, 9, 6, 8, 11, 4, 4]
+            )
+        ].into_iter().map(|s| (s.0.to_string(), s.1, s.2)).collect();
+
+        for td in test_data.iter() {
+            let (smiles, orbits_givp, numbering) = td;
+            let vv = smiles_to_atom_vec(smiles);
+            let results = symmetry_perception_givp(&vv);
+            assert_eq!(results.0, *orbits_givp);
+            assert_eq!(results.1, *numbering);
+        }
+    }
+
+    #[test]
+    fn test_symmetry_perception_cnap() {
+        type InputType1 = String;
+        type InputType2 = Vec<core::orbit_ops::Orbit>;
+        type InputType3 = Vec<usize>;
+        type ReturenType1 = Vec<core::orbit_ops::Orbit>;
+        let test_data: Vec<(InputType1, InputType2, InputType3, ReturenType1)> = vec![
+            (
+                "C(C)(C)CCN",
+                vec![vec![1, 2]],
+                vec![6, 2, 2, 5, 4, 3],
+                vec![vec![1, 2]],
+            ),
+            (
+                "C(C)(C)CCNCCC(C)(C)",
                 vec![vec![0, 8], vec![1, 2, 9, 10], vec![3, 7], vec![4, 6]],
-                vec![]
+                vec![11, 4, 4, 8, 6, 9, 6, 8, 11, 4, 4],
+                vec![vec![0, 8], vec![1, 2, 9, 10], vec![3, 7], vec![4, 6]],
             )
         ].into_iter().map(|s| (s.0.to_string(), s.1, s.2, s.3)).collect();
 
         for td in test_data.iter() {
-            let (smiles, orbits_givp, orbits_cnap, canon_numbering) = td.clone();
-            assert_eq!(symmetry_perception_givp(&smiles).0, orbits_givp);
-            assert_eq!(symmetry_perception_cnap(&smiles), orbits_cnap);
-            assert_eq!(canonical_numbering(&smiles), canon_numbering);
+            let (smiles, orbits_givp, numbering, orbits_cnap) = td;
+            let vv = smiles_to_atom_vec(smiles);
+            let results = symmetry_perception_cnap(&vv, orbits_givp, numbering);
+            assert_eq!(results, *orbits_cnap);
         }
     }
+
 }

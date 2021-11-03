@@ -8,4 +8,4 @@ pub mod cnap;
 pub mod reduce;
 mod workflow;
 
-pub use workflow::symmetry_perception;
+pub use workflow::symmetry_perception_by_graph_reduction;

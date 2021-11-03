@@ -14,5 +14,8 @@ pub mod workflow;
 mod canon_smiles;
 mod tests;
 
+pub use workflow::AtomVec; 
+pub use workflow::smiles_to_atom_vec;
+pub use workflow::symmetry_perception_givp;
+pub use workflow::symmetry_perception_cnap;
 pub use canon_smiles::get_canon_smiles;
-

@@ -353,7 +353,7 @@ mod test_case_breakable {
     }
 
     #[test]
-    fn test_molecule_workflow() {
+    fn test_molecules() {
         type ParamType1 = String;
         let test_data: Vec<ParamType1> = vec![
             "C1CCC2C(CC1)C1CCCCCC21", // an example for the paper

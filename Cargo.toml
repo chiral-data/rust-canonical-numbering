@@ -1,5 +1,5 @@
 [package]
-name = "rust_canonical_numbering"
+name = "graph-canonicalization"
 version = "0.1.0"
 authors = ["Qin Wan <rogerwq@gmail.com>"]
 edition = "2018"
