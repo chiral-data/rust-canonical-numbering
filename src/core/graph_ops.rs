@@ -1,10 +1,13 @@
-// Graph operations
-// 
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Graph operations
 
 use super::graph;
 
-/// The graph distance between two vertices is the minimum count of edges to connect them.
-/// For a fully-connected graph, it means how many steps to take for traversing from vertice 1 to vertice 2
+/// The graph distance between two vertices is the minimum count of edges to connect them. For a fully-connected graph, it means how many steps to take for traversing from vertice 1 to vertice 2
 pub fn graph_distance<T: graph::Vertex>(
     vertex_1: usize,
     vertex_2: usize,
@@ -42,7 +45,7 @@ pub fn graph_distance<T: graph::Vertex>(
 }
 
 #[cfg(test)]
-mod test_graph_ops {
+mod test_core_graph_ops {
     use super::*;
     use crate::ext::molecule;
 

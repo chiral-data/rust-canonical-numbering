@@ -1,18 +1,15 @@
-/// Orbit Operations
-/// 
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
 
-// 
-// Types
-//
+//! Orbit Operations
 
+/// Types
 /// An orbit is the set of all atoms that are transformed from one into another by the actions of all automorphisms of a molecular graph.
 /// Reference: Ovidiu Ivanciuc, Handbook of Chemoinformatics Wiley–VCH 2003, Chapter 12
 pub type Orbit = Vec<usize>;
 
-
-//
-// Methods
-//
 pub fn orbits_sort(orbits: &mut Vec<Orbit>) {
     for i in 0..orbits.len() {
         orbits[i].sort_unstable();
@@ -101,12 +98,8 @@ pub fn orbits_self_merge(orbits: &mut Vec<Orbit>) {
     }
 }
 
-//
-// Tests
-//
-
 #[cfg(test)]
-mod test_orbit_ops {
+mod test_core_orbit_ops {
     use super::*;
 
     #[test]
