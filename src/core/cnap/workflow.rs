@@ -1,9 +1,14 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use super::combinatorial;
 use super::permutation;
 use super::isomorphism;
 
-
+/// Check whether brutal force computation is feasible or not accroding to the parameter COMPUTATION_POWER
 pub fn is_computable(residual_orbits: &Vec<core::orbit_ops::Orbit>) -> bool {
     let mut computation: usize = 1;
     for rp in residual_orbits.iter() {
@@ -20,9 +25,7 @@ pub fn is_computable(residual_orbits: &Vec<core::orbit_ops::Orbit>) -> bool {
     true
 }
 
-//
-// Predicate: two folded symmetry
-// 
+/// Check whether any orbit contains only two elements or not
 fn is_tow_folded_symmetry(residual_orbits: &Vec<core::orbit_ops::Orbit>) -> bool {
     if residual_orbits.len() == 0 {
         return false
@@ -37,9 +40,7 @@ fn is_tow_folded_symmetry(residual_orbits: &Vec<core::orbit_ops::Orbit>) -> bool
 }
 
 
-//
-// Brutal-force Calculation of Symmetric Orbits
-//
+/// Brutal-force checking to find out the symmetric orbits
 pub fn get_symmetric_orbits(
     orbits_residual: &Vec<core::orbit_ops::Orbit>,
     edges: &Vec<(usize, usize, usize)>,
@@ -61,29 +62,20 @@ pub enum ErrorCNAP {
     // ErrorHighSymmetry,
 }
 
-//
-// The Process
-//
+// The CNAP process
 pub fn run<T: core::graph::VertexExtendableHash>(
     edges: &Vec<(usize, usize, usize)>,
     length: usize,
     orbits_residual: &Vec<core::orbit_ops::Orbit>,
     orbits_symmetry: &mut Vec<core::orbit_ops::Orbit>,
 ) -> Result<(), ErrorCNAP> {
-    if is_computable(orbits_residual) { // Brutal-force CNAP
-        // if cfg!(debug_assertions) {
-        //     println!("CNAP Computable {:?}", orbits_residual);
-        // }
-
+    if is_computable(orbits_residual) {
         get_symmetric_orbits(orbits_residual, edges, length, orbits_symmetry);
         Ok(())
     } else {
-        // Case Two-Folded Symmetry
-        if is_tow_folded_symmetry(orbits_residual) {
-            if cfg!(debug_assertions) {
-                println!("Proceed to Two-folded Symmetry: {:?}", orbits_residual);
-            }
-
+        if is_tow_folded_symmetry(orbits_residual) { // Case two-folded symmetry 
+            // two-folded symmetry cannot be handled by graph reduction
+            // it is well worth trying automorphic checking on switching every two vertices inside each orbit
             let mut p: permutation::Permuation = (0..length).collect();
             for orbit in orbits_residual.iter() {
                 p[orbit[0]] = orbit[1];
