@@ -296,12 +296,12 @@ mod test_reduce_case_cyclic {
 
         for td in test_data.iter() {
             let (smiles, results) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut numbering: Vec<usize> = vec![];
             let mut orbits_after_partition: Vec<core::orbit_ops::Orbit> = vec![];
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
             let (mut starting_orbit, mut cycles) = find_starting_orbit(&orbits_after_partition, &vv, 10);
             core::orbit_ops::orbits_sort(&mut starting_orbit);
             core::orbit_ops::orbits_sort(&mut cycles);
@@ -332,12 +332,12 @@ mod test_reduce_case_cyclic {
         ].iter().map(|td| (td.0.to_string(), td.1.clone())).collect();
 
         for td in test_data.iter() {
-            let mol = molecule::molecule::Molecule::from_smiles(&td.0);
+            let mol = molecule::Molecule::from_smiles(&td.0);
             println!("{}", mol.smiles_with_index(&td.0, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut numbering: Vec<usize> = vec![];
             let mut orbits_after_partition: Vec<core::orbit_ops::Orbit> = vec![];
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
 
             match create_mapping(&orbits_after_partition, &numbering, &vv, 8) {
                 Ok((mut mapping, mut boundary_edges)) => { 
@@ -370,7 +370,7 @@ mod test_reduce_case_cyclic {
 
         for td in test_data.iter() {
             let smiles = td;
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(smiles, &vec![]));
             }
@@ -378,7 +378,7 @@ mod test_reduce_case_cyclic {
             let mut orbits_partitioned: Vec<core::orbit_ops::Orbit> = vec![];
             let mut orbits_symmetry: Vec<core::orbit_ops::Orbit> = vec![];
             let mut numbering: Vec<usize> = vec![];
-            molecule::workflow::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
+            molecule::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
             if cfg!(debug_assertions) {
                 core::orbit_ops::orbits_sort(&mut orbits_partitioned);
                 core::orbit_ops::orbits_sort(&mut orbits_symmetry);

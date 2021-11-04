@@ -112,7 +112,7 @@ mod test_core_graph_trait {
 
     #[test]
     fn test_index() {
-        let mol = molecule::molecule::Molecule::from_smiles("c1ccccc1CN");
+        let mol = molecule::Molecule::from_smiles("c1ccccc1CN");
         let vv = VertexVec::init(vec![0, 1, 3, 5], mol.atoms.clone());
         assert_eq!(vv[1].bonds.len(), 2);
     }
@@ -120,7 +120,7 @@ mod test_core_graph_trait {
     #[test]
     #[should_panic]
     fn test_index_panic() {
-        let mol = molecule::molecule::Molecule::from_smiles("c1ccccc1CN");
+        let mol = molecule::Molecule::from_smiles("c1ccccc1CN");
         let vv = VertexVec::init(vec![0, 1, 3, 5], mol.atoms.clone());
         let _ = vv[2].clone();
     }

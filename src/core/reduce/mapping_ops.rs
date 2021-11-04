@@ -150,7 +150,7 @@ mod test_reduce_mapping_ops {
         let smiles_vec: Vec<String> = vec![
             "CC(C)(C)c1cc2c(OCCCCNC(=N)N)c(c1)Cc1cc(C(C)(C)C)cc(c1OCCCCNC(=N)N)Cc1cc(C(C)(C)C)cc(c1OCCCCNC(=N)N)Cc1cc(C(C)(C)C)cc(c1OCCCCNC(=N)N)C2".to_string()
         ].iter().map(|s| s.to_string()).collect();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles_vec[0]);
+        let mol = molecule::Molecule::from_smiles(&smiles_vec[0]);
         let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(find_new_neighbours(7, &vec![], &vv), vec![6, 8, 17]);

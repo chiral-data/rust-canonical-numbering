@@ -48,7 +48,7 @@ fn chembl() {
                 let parts: Vec<&str> = chembl_line.split('\t').collect();
                 if parts.len() == 4 {
                     let smiles: String = clean_smiles(&String::from(parts[1]));
-                    let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+                    let mol = molecule::Molecule::from_smiles(&smiles);
                     if mol.atoms.len() == 0 {
                         continue;
                     }
@@ -64,7 +64,7 @@ fn chembl() {
                     let mut orbits_symmetry: Vec<core::orbit_ops::Orbit> = vec![];
                     let mut numbering: Vec<usize> = vec![];
 
-                    molecule::workflow::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
+                    molecule::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
 
                     if !core::orbit_ops::orbits_equal(&orbits_partitioned, &orbits_symmetry) {
                         core::orbit_ops::orbits_sort(&mut orbits_partitioned);

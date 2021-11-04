@@ -248,7 +248,7 @@ mod test_reduce_graph {
         ];
 
         for (idx, smiles) in smiles_vec.iter().enumerate() {
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(smiles, &vec![]));
             }
@@ -264,7 +264,7 @@ mod test_reduce_graph {
             
             let mut numbering_rg: Vec<usize> = vec![];
             let mut orbits_after_partition_rg: Vec<core::orbit_ops::Orbit> = vec![];
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&rg.vv, &mut numbering_rg, &mut orbits_after_partition_rg);
+            core::givp::run::<molecule::AtomExtendable>(&rg.vv, &mut numbering_rg, &mut orbits_after_partition_rg);
             rg.numbering = numbering_rg;
             rg.orbits_after_partition = orbits_after_partition_rg;
             match rg.create_mapping() {

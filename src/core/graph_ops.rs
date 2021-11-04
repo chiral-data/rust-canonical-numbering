@@ -52,7 +52,7 @@ mod test_core_graph_ops {
     #[test]
     fn test_graph_distance() {
         let smiles: String = "c1ccccc1CN".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(graph_distance(0, 0, &vv), 0); 

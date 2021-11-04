@@ -84,7 +84,7 @@ pub fn get_canon_smiles(smiles: &String) -> String {
 }
 
 #[cfg(test)]
-mod test_canon_smiles {
+mod test_ext_mol_canon_smiles {
     use super::*;
     use rand::Rng;
 

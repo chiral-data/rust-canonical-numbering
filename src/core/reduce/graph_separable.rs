@@ -125,7 +125,7 @@ mod test_reduce_graph_separable {
 
         for td in test_data.iter() {
             let (smiles, result) = td; 
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut rg = core::reduce::reducible_graph::ReducibleGraph {
@@ -135,7 +135,7 @@ mod test_reduce_graph_separable {
                 orbits_after_partition: vec![], 
                 numbering: vec![] 
             };
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&rg.vv, &mut rg.numbering, &mut rg.orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&rg.vv, &mut rg.numbering, &mut rg.orbits_after_partition);
             let cycles = find_cycles(&rg, 6);
 
             assert_eq!(is_separable(&rg, &cycles), *result);
@@ -157,7 +157,7 @@ mod test_reduce_graph_separable {
 
         for td in test_data.iter() {
             let (smiles, _, results) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut rg = core::reduce::reducible_graph::ReducibleGraph {
@@ -167,7 +167,7 @@ mod test_reduce_graph_separable {
                 orbits_after_partition: vec![], 
                 numbering: vec![] 
             };
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&rg.vv, &mut rg.numbering, &mut rg.orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&rg.vv, &mut rg.numbering, &mut rg.orbits_after_partition);
 
             let cycles = find_cycles(&rg, 6);
             for (idx, cycle) in cycles.iter().enumerate() {
@@ -189,7 +189,7 @@ mod test_reduce_graph_separable {
 
         for td in test_data.iter() {
             let smiles = td.clone();
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             }
@@ -197,7 +197,7 @@ mod test_reduce_graph_separable {
             let mut orbits_partitioned: Vec<core::orbit_ops::Orbit> = vec![];
             let mut orbits_symmetry: Vec<core::orbit_ops::Orbit> = vec![];
             let mut numbering: Vec<usize> = vec![];
-            molecule::workflow::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
+            molecule::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
             if cfg!(debug_assertions) {
                 core::orbit_ops::orbits_sort(&mut orbits_partitioned);
                 core::orbit_ops::orbits_sort(&mut orbits_symmetry);

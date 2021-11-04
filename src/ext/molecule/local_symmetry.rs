@@ -1,22 +1,27 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use crate::core::graph::*;
 use super::atom;
 
-// Acyclic Local Symmetry
-//
+/// Seperate vertices in an orbit according to their neighbours. Only applicable for endpoint atoms
 fn group_by_neighbour(
     orbit: &core::orbit_ops::Orbit,
     vv: &core::graph::VertexVec<atom::Atom>,
 ) -> Vec<core::orbit_ops::Orbit> {
     let mut atom_groups: std::collections::HashMap<usize, core::orbit_ops::Orbit> = std::collections::HashMap::new();
     for &ai in orbit.iter() {
-        let nb_idx: usize = vv[ai].neighbour_indexes()[0];
+        let nb_idx: usize = vv[ai].neighbour_indexes()[0]; // endpoint atom has only one neighbour
         atom_groups.entry(nb_idx).or_insert(vec![]).push(ai);
     }
 
     atom_groups.into_values().collect()
 }
 
+/// Acyclic Local Symmetry
 fn is_acyclic_local_symmetric(
     orbit: &core::orbit_ops::Orbit,
     vv: &core::graph::VertexVec<atom::Atom>,
@@ -29,6 +34,7 @@ fn is_acyclic_local_symmetric(
     orbits_local_symmetry.len() == 1
 }
 
+/// Find the cycle including the vertex with minimum size
 fn find_cyclic_route(
     vertex: usize,
     vv: &core::graph::VertexVec<atom::Atom>,
@@ -49,8 +55,7 @@ fn find_cyclic_route(
     cyclic_route
 }
 
-// Cyclic Local Symmetry
-// 
+/// Cyclic Local Symmetry
 fn is_cyclic_local_symmetric(
     orbit: &core::orbit_ops::Orbit,
     vv: &core::graph::VertexVec<atom::Atom>,
@@ -108,7 +113,7 @@ pub fn get_local_symmetric_orbits(
 
 
 #[cfg(test)]
-mod test_local_symmetry {
+mod test_ext_mol_local_symmetry {
     use super::*;
     use super::super::molecule;
 

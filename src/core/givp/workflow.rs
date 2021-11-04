@@ -150,12 +150,12 @@ mod test_givp_workflow {
 
         for td in test_data.iter() {
             let (smiles, results) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             println!("{}", mol.smiles_with_index(smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut orbits: Vec<core::orbit_ops::Orbit> = vec![];
             let mut numbering: Vec<usize> = vec![];
-            run::<molecule::extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits);
+            run::<molecule::AtomExtendable>(&vv, &mut numbering, &mut orbits);
             core::orbit_ops::orbits_sort(&mut orbits);
             assert_eq!(orbits, results.to_vec()); 
         }

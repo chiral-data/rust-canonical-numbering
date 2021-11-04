@@ -177,7 +177,7 @@ mod test_core_cycle_ops {
     #[test]
     fn test_extend_one_edge() {
         let smiles: String = "c1ccccc1CN".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         let mut cyclic_routes: Vec<Vec<usize>> = vec![];
@@ -193,7 +193,7 @@ mod test_core_cycle_ops {
     #[test]
     fn test_cyclic_size_find_cycles() {
         let smiles: String = "NCCCNCCCCN(CCCN)C(=O)CCCCNC(=O)c1ccc(-c2c3nc(c(-c4ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc4)c4ccc([nH]4)c(-c4ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc4)c4nc(c(-c5ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc5)c5ccc2[nH]5)C=C4)C=C3)cc1".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(cycle_size(65, &vv), 5); 
@@ -207,7 +207,7 @@ mod test_core_cycle_ops {
     #[test]
     fn tet_find_cycle_for_vertices() {
         let smiles: String = "c1ccccc1CN".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(find_cycle_for_vertices(0, 6, &vv, 6), None);
@@ -231,7 +231,7 @@ mod test_core_cycle_ops {
 
         for td in test_data.iter() {
             let (smiles, vertex_index, cycle_count) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             assert_eq!(find_all_cycles(*vertex_index, &vv, 6).len(), *cycle_count);
@@ -252,7 +252,7 @@ mod test_core_cycle_ops {
 
 
         for idx in 0..smiles_vec.len() {
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles_vec[idx]);
+            let mol = molecule::Molecule::from_smiles(&smiles_vec[idx]);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(&smiles_vec[idx], &vec![]));
             }

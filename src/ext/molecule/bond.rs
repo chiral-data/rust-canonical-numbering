@@ -68,7 +68,7 @@ impl core::graph::Edge for Bond {
 
 
 #[cfg(test)]
-mod test_bond {
+mod test_ext_mol_bond {
     use super::*;
     use crate::core::graph::*;
 

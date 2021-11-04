@@ -94,7 +94,7 @@ pub fn canonical_numbering_and_symmetry_perception(
 }
 
 #[cfg(test)]
-mod test_molecule_workflow {
+mod test_ext_mol_workflow {
     use super::*;
     use crate::ext::molecule;
     

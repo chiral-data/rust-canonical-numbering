@@ -22,7 +22,7 @@ fn krotko_test() {
 
     for td in test_data.iter() {
         let (smiles, source) = td.clone();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         if cfg!(debug_assertions) {
             println!("\n\nTest for {} from {}", smiles, source);
             println!("============================================");
@@ -32,7 +32,7 @@ fn krotko_test() {
         let mut orbits_partitioned: Vec<core::orbit_ops::Orbit> = vec![];
         let mut orbits_symmetry: Vec<core::orbit_ops::Orbit> = vec![];
         let mut numbering: Vec<usize> = vec![];
-        molecule::workflow::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
+        molecule::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
         println!("SMILES with numbering:\n{}", mol.smiles_with_index(&smiles, &numbering));
         if cfg!(debug_assertions) {
             core::orbit_ops::orbits_sort(&mut orbits_partitioned);

@@ -177,7 +177,7 @@ impl core::graph::Vertex for Atom {
 }
 
 #[cfg(test)]
-mod test_atom {
+mod test_ext_mol_atom {
     use super::*;
     use crate::core::graph::*;
     use crate::ext::molecule::molecule;

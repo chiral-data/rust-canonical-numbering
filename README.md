@@ -18,4 +18,5 @@ cargo test --lib
 ### Integration tests 
 ```sh
 cargo test --test chembl_test
+cargo test --test krotko_test
 ```
