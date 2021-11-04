@@ -3,7 +3,7 @@ use super::graph;
 use super::reduce;
 
 pub fn symmetry_perception_by_graph_reduction<T: graph::VertexExtendableHash>(
-    rg: &mut reduce::reducible_graph::ReducibleGraph<T::VertexType>,
+    rg: &mut reduce::ReducibleGraph<T::VertexType>,
     orbits_symmetry: &mut Vec<orbit_ops::Orbit>,
     get_reduced_edges: fn(&Vec<T::VertexType>, &Vec<usize>) -> Vec<(usize, usize, usize)>,
     get_local_symmetric_orbits: fn(&graph::VertexVec<T::VertexType>, &mut Vec<orbit_ops::Orbit>, &mut Vec<orbit_ops::Orbit>),

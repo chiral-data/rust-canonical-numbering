@@ -1,18 +1,19 @@
+// Copyr1ight 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 
-//
-// Types
-// 
+/// Types
 pub type VertexMapping = Vec<Vec<usize>>;
 pub type NeighbourIndexes = Vec<usize>;
 pub type SimpleEdge = (usize, usize);
 pub type BoundaryEdges = Vec<Vec<SimpleEdge>>;
-// pub type BoundaryVertices = Vec<usize>;
 pub type MappingStatus = (usize, VertexMapping, BoundaryEdges);
-// pub type MappingStatusTypeII = (usize, VertexMapping, BoundaryEdges, BoundaryVertices);
 
 /// Find the neighbours of the current vertex in the mapping sequence;
-/// Ignore the neighbours if they have been in the mapping
+///     Ignore the neighbours if they have been in the mapping
 pub fn find_new_neighbours<T: core::graph::Vertex>(
     vertex_index: usize,
     mapping_index: &Vec<usize>,
@@ -22,21 +23,6 @@ pub fn find_new_neighbours<T: core::graph::Vertex>(
         .filter(|nb_idx| !mapping_index.contains(&nb_idx))
         .collect()
 }
-
-// fn find_new_neighbours_for_vertices<T: core::graph::Vertex>(
-//     vertices: &Vec<usize>,
-//     mapping_index: &Vec<usize>,
-//     vv: &core::graph::VertexVec<T>
-//  ) -> Vec<usize> {
-//     let mut all_neighbours: Vec<usize> = vertices.iter()
-//         .map(|&vi| find_new_neighbours(vi, mapping_index, vv))
-//         .flatten()
-//         .collect();
-//     all_neighbours.sort_unstable();
-//     all_neighbours.dedup();
-
-//     all_neighbours
-// }
 
 /// Enumerate all possible mappings of the neighbours according to a numbering
 fn enumerate_neighbour_mappings(
@@ -154,70 +140,8 @@ pub fn update_mapping_stack(
     }
 }
 
-// pub fn update_mapping_stack_type_ii(
-//     mapping_cur: usize,
-//     current_mapping: &VertexMapping,
-//     current_boundary_edges: &BoundaryEdges,
-//     current_boundary_vertices: &BoundaryVertices,
-//     neighbour_mapping: &Vec<VertexMapping>,
-//     mapping_stack: &mut Vec<MappingStatusTypeII>
-// ) {
-//     for nm in neighbour_mapping.iter() {
-//         let mut current_mapping_cloned = current_mapping.to_vec();
-//         for i in 0..current_mapping_cloned.len() {
-//             current_mapping_cloned[i].append(&mut nm[i].to_vec())
-//         }
-//         mapping_stack.push((mapping_cur, current_mapping_cloned, current_boundary_edges.to_vec(), current_boundary_vertices.to_vec()));
-//     }
-// }
-
-// fn find_overlapping_vertices<T: core::graph::Vertex>(
-//     starting_orbit: &core::orbit_ops::Orbit,
-//     vv: &core::graph::VertexVec<T>
-// ) -> Vec<usize> {
-//     let mut frontier_vertices: Vec<Vec<usize>> = starting_orbit.iter()
-//         .map(|&vi| vec![vi])
-//         .collect();
-//     let mut visited_vertices: Vec<Vec<usize>> = starting_orbit.iter()
-//         .map(|&vi| vec![vi])
-//         .collect();
-//     let mut overlapping_vertices: Vec<usize> = vec![];
-
-//     loop {
-//         let frontier_vertices_last = frontier_vertices.clone();
-//         frontier_vertices = (0..starting_orbit.len())
-//             .map(|idx| find_new_neighbours_for_vertices(&frontier_vertices_last[idx], &visited_vertices[idx], vv))
-//             .collect();
-//         if frontier_vertices[0].len() == 0 {
-//             break;
-//         }
-
-//         for idx in 0..starting_orbit.len() {
-//             visited_vertices[idx].append(&mut frontier_vertices[idx].clone());
-//         }
-
-//         let mut all_neighbours: Vec<usize> = frontier_vertices.clone().into_iter().flatten().collect();
-//         all_neighbours.sort_unstable();
-//         for idx in 1..all_neighbours.len() {
-//             if all_neighbours[idx] == all_neighbours[idx - 1] {
-//                 overlapping_vertices.push(all_neighbours[idx]);
-//             }
-//         }
-//         overlapping_vertices.sort_unstable();
-//         overlapping_vertices.dedup();
-//         for fv in frontier_vertices.iter_mut() {
-//             *fv = fv.clone().into_iter().filter(|vi| !overlapping_vertices.contains(vi)).collect();
-//         }
-
-        
-//     }
-
-//     overlapping_vertices
-// }
-
-
 #[cfg(test)]
-mod test_mapping_ops {
+mod test_reduce_mapping_ops {
     use crate::ext::molecule;
     use super::*;
 
@@ -242,29 +166,4 @@ mod test_mapping_ops {
         assert_eq!(all_mappings.contains(&vec![3, 4, 1]), true);
         assert_eq!(all_mappings.contains(&vec![4, 3, 1]), true);
     }
-
-    // #[test]
-    // fn test_find_overlapping_vertices() {
-    //     type InputType1 = String;
-    //     type InputType2 = core::orbit_ops::Orbit;
-    //     type ReturnType = Vec<usize>;
-    //     let test_data: Vec<(InputType1, InputType2, ReturnType)> = vec![
-    //         (
-    //             "CN1c2ccccc2N(C)C23N(C)c4ccccc4N(C)C12N(C)c1ccccc1N3C", // 1287772
-    //             vec![6, 14, 28],
-    //             vec![10, 21]
-    //         )
-    //     ].iter().map(|td| (td.0.to_string(), td.1.clone(), td.2.clone())).collect();
-
-    //     for td in test_data.iter() {
-    //         let (smiles, starting_orbit, results) = td;
-    //         let mol = molecule::molecule::Molecule::from_smiles(smiles);
-    //         println!("{}", mol.smiles_with_index(smiles, &vec![]));
-    //         let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
-    //         assert_eq!(
-    //             find_overlapping_vertices(starting_orbit, &vv),
-    //             *results
-    //         );
-    //     }
-    // }
 }

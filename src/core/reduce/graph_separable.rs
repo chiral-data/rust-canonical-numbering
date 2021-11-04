@@ -1,3 +1,11 @@
+// Copyr1ight 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Separable Graph
+
+
 use crate::core;
 use super::reducible_graph;
 
@@ -103,7 +111,7 @@ pub fn construct_reducible_graph<T: core::graph::Vertex>(
 }
 
 #[cfg(test)]
-mod test_graph_separable {
+mod test_reduce_graph_separable {
     use crate::ext::molecule;
     use super::*;
 

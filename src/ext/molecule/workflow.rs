@@ -55,7 +55,7 @@ pub fn symmetry_perception_cnap(
     let mut orbits_cnap: Vec<core::orbit_ops::Orbit> = vec![];
 
     if orbits_givp.len() != 0 {
-        let mut rg = core::reduce::reducible_graph::ReducibleGraph {
+        let mut rg = core::reduce::ReducibleGraph {
             vv: vv.clone(),
             mapping: vec![],
             boundary_edges: vec![],
@@ -82,7 +82,7 @@ pub fn canonical_numbering_and_symmetry_perception(
     // calculate and save the givp result for comparison
     core::givp::run::<extendable_hash::AtomExtendable>(&vv, numbering, orbits_after_partition);
 
-    let mut rg = core::reduce::reducible_graph::ReducibleGraph {
+    let mut rg = core::reduce::ReducibleGraph {
         vv: vv,
         mapping: vec![],
         boundary_edges: vec![],

@@ -1,3 +1,10 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Case cyclic
+
 use crate::core;
 use super::mapping_ops;
 
@@ -203,7 +210,7 @@ pub fn create_mapping<T: core::graph::Vertex>(
 }
 
 #[cfg(test)]
-mod test_case_cyclic {
+mod test_reduce_case_cyclic {
     use super::*;
     use crate::ext::molecule;
 
