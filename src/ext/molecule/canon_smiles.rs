@@ -6,6 +6,14 @@
 //!
 //! Generation of canonicalized SMILES for molecules
 //!     Use GIVP orbits directly, assume that GIVP orbits were symmetric orbits
+//!
+//! # Examples:
+//!
+//! ```rust 
+//! use graph_canonicalization;
+//! 
+//! assert_eq!(graph_canonicalization::ext::molecule::get_canon_smiles(&String::from("c1ccccc1CN")), "NCc1ccccc1".to_string());
+//! ```
 //! 
 
 use crate::core;

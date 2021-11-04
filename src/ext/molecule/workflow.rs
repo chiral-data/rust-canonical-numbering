@@ -5,7 +5,19 @@
 
 //!
 //! Workflow for Extenion Module: Molecule
+//!
+//! # Examples
 //! 
+//! ```rust
+//! use graph_canonicalization;
+//! 
+//! let atom_vec = graph_canonicalization::ext::molecule::smiles_to_atom_vec("C(C)(C)CCN");
+//! let (orbits_givp, numbering) = graph_canonicalization::ext::molecule::symmetry_perception_givp(&atom_vec);
+//! assert_eq!(orbits_givp, vec![vec![1, 2]]);
+//! assert_eq!(numbering, vec![6, 2, 2, 5, 4, 3]);
+//! let (orbits_cnap) = graph_canonicalization::ext::molecule::symmetry_perception_cnap(&atom_vec, &orbits_givp, &numbering);
+//! assert_eq!(orbits_cnap, vec![vec![1, 2]]);
+//! ``` 
 
 use crate::core;
 use crate::core::graph::*;
