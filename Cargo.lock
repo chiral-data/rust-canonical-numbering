@@ -26,7 +26,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "graph-canonicalization"
+name = "graph_canonicalization"
 version = "0.1.0"
 dependencies = [
  "chem",

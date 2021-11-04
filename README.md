@@ -10,7 +10,12 @@ ext::molecule::get_canon_smiles(&String::from("c1ccccc1CN"))
 
 ## Tests
 
-### Run tests on ChEMBL
+### Unit tests
 ```sh
-cargo test chembl
+cargo test --lib
+```
+
+### Integration tests 
+```sh
+cargo test --test chembl_test
 ```

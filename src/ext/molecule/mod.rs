@@ -12,7 +12,6 @@ pub mod extendable_hash;
 mod local_symmetry;
 pub mod workflow;
 mod canon_smiles;
-mod tests;
 
 pub use workflow::AtomVec; 
 pub use workflow::smiles_to_atom_vec;
