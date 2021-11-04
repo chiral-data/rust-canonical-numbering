@@ -1,9 +1,13 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use crate::core::graph::*;
 use super::partition;
 
-/// Partition by hash values
-/// 
+/// Quicksort by hash_values, that could be any type with trait PartialOrd implemented
 pub fn partition_by_hash_values<T: std::cmp::PartialOrd>(
     orbit: &core::orbit_ops::Orbit,
     hash_values: &Vec<T>,
@@ -14,8 +18,7 @@ pub fn partition_by_hash_values<T: std::cmp::PartialOrd>(
     partition::partition_recursively(orbit, hash_values, current_numbering, numbering, residual_orbits);
 }
 
-/// Partition by vertice extendable hash method 
-/// 
+/// Quicksort and Extension algorithm for extendable hash_values 
 pub fn partition_by_extendable_hash_values<T: core::graph::VertexExtendableHash>(
     orbits_to_be_partitioned: &Vec<core::orbit_ops::Orbit>,
     vertices: &Vec<T::VertexType>,
@@ -70,7 +73,8 @@ fn partition_vertices_with_extendable_hash_value<T: core::graph::VertexExtendabl
         orbits_to_be_partitioned, vertices, &fixed_hash_values, &mut extendable_hash_entities, &mut extendable_hash_values, numbering, orbits_output);
 }
 
-pub fn partition_vertices_with<T: core::graph::VertexExtendableHash>(
+/// Partition vertices with fixed and extendable hash_values 
+fn partition_vertices_once<T: core::graph::VertexExtendableHash>(
     vertice_indexes: &Vec<usize>,
     vertices: &Vec<T::VertexType>,
     fixed_hash_values: &Vec<core::graph::VertexFixedHashValue>,
@@ -83,7 +87,6 @@ pub fn partition_vertices_with<T: core::graph::VertexExtendableHash>(
     partition_vertices_with_extendable_hash_value::<T>(vertices, fixed_hash_values, &orbits_to_be_partitioned, numbering, orbits_output);
 }
 
-
 pub fn partition_vertices<T: core::graph::VertexExtendableHash>(
     vertice_indexes: &Vec<usize>,
     vertices: &Vec<T::VertexType>
@@ -93,11 +96,13 @@ pub fn partition_vertices<T: core::graph::VertexExtendableHash>(
         .collect();
     let mut numbering: Vec<usize> = vec![vertices.len(); vertices.len()];
     let mut orbits_output: Vec<core::orbit_ops::Orbit> = vec![];
-    partition_vertices_with::<T>(&vertice_indexes, vertices, &fixed_hash_values, &mut numbering, &mut orbits_output);
+    partition_vertices_once::<T>(&vertice_indexes, vertices, &fixed_hash_values, &mut numbering, &mut orbits_output);
     
     orbits_output
 }
 
+/// GIVP procese
+///     if vertex numbering is given, it will partition according to the extendable hash_values directly
 pub fn run<T: core::graph::VertexExtendableHash>(
     vv: &core::graph::VertexVec<T::VertexType>,
     numbering: &mut Vec<usize>,
@@ -109,7 +114,7 @@ pub fn run<T: core::graph::VertexExtendableHash>(
             .collect();
         *numbering = vec![vv.len(); vv.all_len()];
         orbits_output.clear();
-        partition_vertices_with::<T>(vv.valid_indexes(), vv.all_vertices(), &fixed_hash_values, numbering, orbits_output);
+        partition_vertices_once::<T>(vv.valid_indexes(), vv.all_vertices(), &fixed_hash_values, numbering, orbits_output);
     }
 
     // do GIAP again
@@ -154,6 +159,5 @@ mod test_givp_workflow {
             core::orbit_ops::orbits_sort(&mut orbits);
             assert_eq!(orbits, results.to_vec()); 
         }
-
     }
 }
