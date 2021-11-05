@@ -1,13 +1,18 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use super::combinatorial;
 
-//
-// Types
-//
+/// Types 
+
 /// Permutation is a rearrangement of vertex order, then can be converted to a mapping
 ///     eg. permutation [1, 3, 2, 0] means vertex mapping (0 -> 1), (1 -> 3), (2 -> 2), (3 -> 0)
-/// 
 pub type Permuation = Vec<usize>;
+/// Mapping stores how two elements from two sets pair
+///     refer to the definition of Bijection: https://en.wikipedia.org/wiki/Bijection
 pub type Mapping = std::collections::HashMap<usize, usize>;
 
 /// Insert new elements into the mapping
@@ -38,7 +43,7 @@ fn permutation_from_mapping(
     permutation_vec
 }
 
-/// Conversion from Mapping to permutated vertex pair, a.k.a, a two-element orbit
+/// Conversion from Mapping to a vector of vertex orbits, where each orbit contains two vertices 
 fn orbits_from_mapping(
     mapping: &Mapping,
     length: usize
@@ -62,7 +67,7 @@ fn orbits_from_mapping(
     orbits
 }
 
-/// Conversion from Permutation to permutated vertex pair, a.k.a., a two-element orbit
+/// Conversion from Permutation to a vector of vertex orbits 
 pub fn orbits_from_permutation(
     permutation_vec: &Permuation,
     length: usize
@@ -86,6 +91,7 @@ pub fn mapping_from_permutation(
     mapping
 }
 
+/// Auxiliary function for create combination of permutations from multiple vectors 
 fn permutation_groups_of_orbit_indexes(
     v_counts: &Vec<usize>
 ) -> Vec<Vec<usize>> {
@@ -111,7 +117,7 @@ fn permutation_groups_of_orbit_indexes(
 }
 
 
-/// Generate all possible permutations accroding to the orbits
+/// Generate all possible permutations from the given orbits
 pub fn generate_all_permutations(
     orbits: &Vec<core::orbit_ops::Orbit>,
     length: usize
@@ -138,7 +144,7 @@ pub fn generate_all_permutations(
 }
 
 #[cfg(test)]
-mod test_permutation {
+mod test_cnap_permutation {
     use super::*;
 
     #[test]

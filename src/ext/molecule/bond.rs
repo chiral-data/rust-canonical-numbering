@@ -1,3 +1,8 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use crate::core;
 use super::config;
 
@@ -29,6 +34,19 @@ impl Bond {
         }
     }
 
+    pub fn bond_char(&self) -> String {
+        match self.kind {
+            purr::feature::BondKind::Elided => String::from(""),
+            purr::feature::BondKind::Single => String::from(""),
+            purr::feature::BondKind::Double => String::from("="),
+            purr::feature::BondKind::Triple => String::from("#"),
+            purr::feature::BondKind::Quadruple => String::from("$"),
+            purr::feature::BondKind::Aromatic => String::from(""),
+            purr::feature::BondKind::Up => String::from(""),
+            purr::feature::BondKind::Down => String::from("")
+        }
+    }
+
     pub fn break_symmetry(& mut self) {
         self.is_breaking_symmetry = true;
     }
@@ -50,7 +68,7 @@ impl core::graph::Edge for Bond {
 
 
 #[cfg(test)]
-mod test_bond {
+mod test_ext_mol_bond {
     use super::*;
     use crate::core::graph::*;
 

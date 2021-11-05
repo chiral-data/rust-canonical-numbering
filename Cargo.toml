@@ -1,10 +1,13 @@
 [package]
-name = "rust_canonical_numbering"
+name = "graph_symmetry"
 version = "0.1.0"
-authors = ["Qin Wan <rogerwq@gmail.com>"]
+description = "Symmetry perception for graphs and its applications on canonicalization"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "Apache-2.0"
 
 [dependencies]
 purr = "0.9"
+chem = "0.0.2"
+
+[dev-dependencies]
+rand = "0.8.4"

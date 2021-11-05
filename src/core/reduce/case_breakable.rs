@@ -1,3 +1,10 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Case breakable
+
 use crate::core;
 use super::mapping_ops;
 
@@ -173,7 +180,7 @@ pub fn create_mapping<T: core::graph::Vertex>(
 
 
 #[cfg(test)]
-mod test_case_breakable {
+mod test_reduce_case_breakable {
     use super::*;
     use crate::ext::molecule;
 
@@ -197,7 +204,7 @@ mod test_case_breakable {
         ];
 
         for (idx, smiles) in smiles_vec.iter().enumerate() {
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
              println!("{}", mol.smiles_with_index(smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             for tp in tests_params[idx].iter() {
@@ -271,12 +278,12 @@ mod test_case_breakable {
 
         for td in test_data.iter() {
             let (smiles, results) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             println!("{}", mol.smiles_with_index(smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut numbering: Vec<usize> = vec![];
             let mut orbits_after_partition: Vec<core::orbit_ops::Orbit> = vec![];
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
             assert_eq!(find_starting_orbit(&orbits_after_partition, &vv), *results);
         }
     }
@@ -338,12 +345,12 @@ mod test_case_breakable {
 
         for td in test_data.iter() {
             let (smiles, results) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             println!("{}", mol.smiles_with_index(smiles, &vec![]));
             let vv = core::graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             let mut numbering: Vec<usize> = vec![];
             let mut orbits_after_partition: Vec<core::orbit_ops::Orbit> = vec![];
-            core::givp::run::<molecule::extendable_hash::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
+            core::givp::run::<molecule::AtomExtendable>(&vv, &mut numbering, &mut orbits_after_partition);
 
             match create_mapping(&orbits_after_partition, &numbering, &vv) {
                 Ok(mapping_results) => { assert_eq!(mapping_results, *results); }
@@ -353,7 +360,7 @@ mod test_case_breakable {
     }
 
     #[test]
-    fn test_molecule_workflow() {
+    fn test_molecules() {
         type ParamType1 = String;
         let test_data: Vec<ParamType1> = vec![
             "C1CCC2C(CC1)C1CCCCCC21", // an example for the paper
@@ -361,7 +368,7 @@ mod test_case_breakable {
 
         for td in test_data.iter() {
             let smiles = td;
-            let mol = molecule::molecule::Molecule::from_smiles(smiles);
+            let mol = molecule::Molecule::from_smiles(smiles);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(smiles, &vec![]));
             }
@@ -369,7 +376,7 @@ mod test_case_breakable {
             let mut orbits_partitioned: Vec<core::orbit_ops::Orbit> = vec![];
             let mut orbits_symmetry: Vec<core::orbit_ops::Orbit> = vec![];
             let mut numbering: Vec<usize> = vec![];
-            molecule::workflow::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
+            molecule::canonical_numbering_and_symmetry_perception(&mol.atoms, &mut orbits_partitioned, &mut orbits_symmetry, &mut numbering);
             if cfg!(debug_assertions) {
                 core::orbit_ops::orbits_sort(&mut orbits_partitioned);
                 core::orbit_ops::orbits_sort(&mut orbits_symmetry);

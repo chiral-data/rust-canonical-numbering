@@ -1,8 +1,14 @@
-// Cycle related operations
-//
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Cycle related operations
+//! 
 use super::orbit_ops;
 use super::graph;
 
+/// Extend on edge in the graph, store all the cyclic routes and the open routes
 fn extend_one_edge<T: graph::Vertex>(
     open_route: &Vec<usize>,
     vv: &graph::VertexVec<T>,
@@ -23,8 +29,7 @@ fn extend_one_edge<T: graph::Vertex>(
     }
 }
 
-/// Find the size of the minimun cycle which the vertex belongs to.
-/// If the vertex is acylic, return 0 
+/// Find the size of the minimun cycle which the vertex belongs to. If the vertex is acylic, return 0 
 pub fn cycle_size<T: graph::Vertex>(
     vertex_index: usize,
     vv: &graph::VertexVec<T>
@@ -46,29 +51,7 @@ pub fn cycle_size<T: graph::Vertex>(
     0
 }
 
-
-fn find_cycles<T: graph::Vertex>(
-    vertex_index: usize,
-    vv: &graph::VertexVec<T>,
-    max_cycle_size: usize
-) -> Vec<Vec<usize>> {
-    let mut open_routes: Vec<Vec<usize>> = vec![vec![vertex_index]];
-    let mut cyclic_routes: Vec<Vec<usize>> = vec![];
-
-    while open_routes.len() > 0 && open_routes[0].len() <= max_cycle_size {
-        let open_routes_tmp = open_routes.clone();
-        open_routes.clear();
-        for route in open_routes_tmp.iter() {
-            extend_one_edge(route, vv, &mut cyclic_routes, &mut open_routes);
-            if cyclic_routes.len() > 0 {
-                return cyclic_routes
-            }
-        }
-    }
-
-    vec![]
-}
-
+/// Find cycles that the two specified vertices belong to.
 pub fn find_cycle_for_vertices<T: graph::Vertex>(
     vertice_idx_1: usize,
     vertice_idx_2: usize,
@@ -95,6 +78,30 @@ pub fn find_cycle_for_vertices<T: graph::Vertex>(
     return None
 }
 
+/// Find vertex cycles that include the specified vertex, with a maximum size. If one cycle is found, return
+fn find_cycles<T: graph::Vertex>(
+    vertex_index: usize,
+    vv: &graph::VertexVec<T>,
+    max_cycle_size: usize
+) -> Vec<Vec<usize>> {
+    let mut open_routes: Vec<Vec<usize>> = vec![vec![vertex_index]];
+    let mut cyclic_routes: Vec<Vec<usize>> = vec![];
+
+    while open_routes.len() > 0 && open_routes[0].len() <= max_cycle_size {
+        let open_routes_tmp = open_routes.clone();
+        open_routes.clear();
+        for route in open_routes_tmp.iter() {
+            extend_one_edge(route, vv, &mut cyclic_routes, &mut open_routes);
+            if cyclic_routes.len() > 0 {
+                return cyclic_routes
+            }
+        }
+    }
+
+    vec![]
+}
+
+/// Find all the cycles that include the specified vertex.
 pub fn find_all_cycles<T: graph::Vertex>(
     vertex_index: usize,
     vv: &graph::VertexVec<T>,
@@ -116,6 +123,7 @@ pub fn find_all_cycles<T: graph::Vertex>(
     cyclic_routes
 }
 
+/// Find related cycles that include any vertex in the orbits
 pub fn get_cycles_from_orbits<T: graph::Vertex>(
     orbits: &Vec<orbit_ops::Orbit>,
     vv: &graph::VertexVec<T>,
@@ -132,6 +140,7 @@ pub fn get_cycles_from_orbits<T: graph::Vertex>(
     cycles
 }
 
+/// Merge cycles that share any vertex in a given set of cycles.
 pub fn merge_cycles(
     cycles: &Vec<Vec<usize>>
 ) -> Vec<Vec<usize>> {
@@ -161,14 +170,14 @@ pub fn merge_cycles(
 }
 
 #[cfg(test)]
-mod test_cycle_ops {
+mod test_core_cycle_ops {
     use super::*;
     use crate::ext::molecule;
 
     #[test]
     fn test_extend_one_edge() {
         let smiles: String = "c1ccccc1CN".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         let mut cyclic_routes: Vec<Vec<usize>> = vec![];
@@ -184,7 +193,7 @@ mod test_cycle_ops {
     #[test]
     fn test_cyclic_size_find_cycles() {
         let smiles: String = "NCCCNCCCCN(CCCN)C(=O)CCCCNC(=O)c1ccc(-c2c3nc(c(-c4ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc4)c4ccc([nH]4)c(-c4ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc4)c4nc(c(-c5ccc(C(=O)NCCCCC(=O)N(CCCN)CCCCNCCCN)cc5)c5ccc2[nH]5)C=C4)C=C3)cc1".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(cycle_size(65, &vv), 5); 
@@ -198,7 +207,7 @@ mod test_cycle_ops {
     #[test]
     fn tet_find_cycle_for_vertices() {
         let smiles: String = "c1ccccc1CN".to_string();
-        let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+        let mol = molecule::Molecule::from_smiles(&smiles);
         let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
 
         assert_eq!(find_cycle_for_vertices(0, 6, &vv, 6), None);
@@ -222,7 +231,7 @@ mod test_cycle_ops {
 
         for td in test_data.iter() {
             let (smiles, vertex_index, cycle_count) = td;
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles);
+            let mol = molecule::Molecule::from_smiles(&smiles);
             println!("{}", mol.smiles_with_index(&smiles, &vec![]));
             let vv = graph::VertexVec::init((0..mol.atoms.len()).collect(), mol.atoms.clone());
             assert_eq!(find_all_cycles(*vertex_index, &vv, 6).len(), *cycle_count);
@@ -243,7 +252,7 @@ mod test_cycle_ops {
 
 
         for idx in 0..smiles_vec.len() {
-            let mol = molecule::molecule::Molecule::from_smiles(&smiles_vec[idx]);
+            let mol = molecule::Molecule::from_smiles(&smiles_vec[idx]);
             if cfg!(debug_assertions) {
                 println!("{}", mol.smiles_with_index(&smiles_vec[idx], &vec![]));
             }

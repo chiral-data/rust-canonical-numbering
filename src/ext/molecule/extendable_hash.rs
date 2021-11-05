@@ -1,3 +1,10 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
+//! Extendable Hash Value for Atom
+
 use crate::core;
 use crate::core::graph::*;
 use super::config;
@@ -57,7 +64,7 @@ impl core::graph::VertexExtendableHash for AtomExtendable {
 }
 
 #[cfg(test)]
-mod test_atom_ext {
+mod test_ext_mol_atom_ext {
     use super::*;
     use super::super::molecule;
     use crate::core;

@@ -1,15 +1,13 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use super::atom;
 
 pub struct Molecule {
     pub atoms: Vec<atom::Atom>,
 }
-
-// pub fn reduced_edges(atoms: &Vec<atom::Atom>, atom_indexes: &Vec<usize>) -> Vec<(usize, usize, usize)> {
-//     atom_indexes.iter()
-//         .map(|&ai| atoms[ai].bonds.iter().map(move |b| (ai, b.tid, b.bond_type())))
-//         .flatten()
-//         .collect()
-// }
 
 impl Molecule {
     pub fn from_smiles(smiles: &str) -> Self {
@@ -93,7 +91,7 @@ impl Molecule {
 }
 
 #[cfg(test)]
-mod test_molecule {
+mod test_ext_mol_molecule {
     use super::*;
 
     #[test]
@@ -117,14 +115,4 @@ mod test_molecule {
         assert_eq!(mol.atoms[7].kind, "N".to_string());
         assert_eq!(mol.atoms[7].bonds.len(), 1);
     }
-
-    // #[test]
-    // fn test_edges() {
-    //     let smiles: String = "c1ccccc1CN".to_string();
-    //     let mol = Molecule::from_smiles(&smiles);
-    //     let edges_all = mol.edges();
-    //     assert_eq!(edges_all.len(), 16);
-    //     let edges = reduced_edges(&mol.atoms, &vec![5, 6, 7]);
-    //     assert_eq!(edges.len(), 6);
-    // }
 }

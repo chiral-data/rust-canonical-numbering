@@ -1,12 +1,18 @@
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 use super::permutation;
 
+/// Check whether a permutation is automorphic or not
 pub fn is_automorphic(
-    permutation: &permutation::Permuation,
+    perm: &permutation::Permuation,
     edges: &Vec<(usize, usize, usize)>
 ) -> bool {
     for (n1, n2, edge_type) in edges.iter() {
-        let n1_target: usize = permutation[*n1];
-        let n2_target: usize = permutation[*n2];
+        let n1_target: usize = perm[*n1];
+        let n2_target: usize = perm[*n2];
         if !edges.contains(&(n1_target, n2_target, *edge_type)) {
             return false
         }
@@ -16,7 +22,7 @@ pub fn is_automorphic(
 }
 
 #[cfg(test)]
-mod test_isomorphism {
+mod test_cnap_isomorphism {
     use super::*;
 
     #[test]

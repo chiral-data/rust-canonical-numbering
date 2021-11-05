@@ -1,8 +1,5 @@
-# rust-canonical-numbering
-A canonical numbering algorithm for graph implemented in Rust
+# Repository Migration 
 
-
-## Run tests on ChEMBL
-```sh
-cargo test chembl
-```
+:warning: A [new repository](https://github.com/chiral-data/rust-graph-symmetry) has been created. 
+:warning: Maintenance of this repository is suspending.
+:heart: Thank you for understanding.

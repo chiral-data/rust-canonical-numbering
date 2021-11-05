@@ -1,16 +1,16 @@
-/// Graph
-/// Trait for Graph Vertex & Edge & Vector of Vertices
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
 
-//
-//  Types
-//
+//! Graph Trait for Vertex & Edge & Vector of Vertices
+
+///  Types
 pub type VertexFixedHashValue = usize;
 pub type VertexExtendableHashValue = Vec<usize>;
 pub type EdgeFixedHashValue = usize;
 
-//
-//  Trait Vertex
-//
+///  Trait Vertex
 pub trait Vertex: Clone {
     fn fixed_hash_value(&self) -> VertexFixedHashValue;
     fn break_symmetry_vertex(&mut self);
@@ -45,16 +45,12 @@ pub trait Vertex: Clone {
     fn debug_print(&self);
 }
 
-//
-// Trait Edge
-//
+/// Trait Edge
 pub trait Edge: Clone {
     fn fixed_hash_value(&self) -> EdgeFixedHashValue;
 }
 
-//
-// Trait Extendable Hash for Vertex
-//
+/// Trait Extendable Hash for Vertex
 pub trait VertexExtendableHash: Clone {
     type VertexType: Vertex;
 
@@ -64,9 +60,7 @@ pub trait VertexExtendableHash: Clone {
     fn value(&self, fixed_hash_values: &Vec<VertexFixedHashValue>) -> VertexExtendableHashValue; 
 }
 
-//
-// Trait Vertices
-//
+/// Trait Vertices
 #[derive(Debug, Clone)]
 pub struct VertexVec<T: Vertex> {
     indexes: Vec<usize>,
@@ -112,13 +106,13 @@ impl<T: Vertex> std::ops::Index<usize> for VertexVec<T> {
 }
 
 #[cfg(test)]
-mod test_graph_def {
+mod test_core_graph_trait {
     use super::*;
     use crate::ext::molecule;
 
     #[test]
     fn test_index() {
-        let mol = molecule::molecule::Molecule::from_smiles("c1ccccc1CN");
+        let mol = molecule::Molecule::from_smiles("c1ccccc1CN");
         let vv = VertexVec::init(vec![0, 1, 3, 5], mol.atoms.clone());
         assert_eq!(vv[1].bonds.len(), 2);
     }
@@ -126,7 +120,7 @@ mod test_graph_def {
     #[test]
     #[should_panic]
     fn test_index_panic() {
-        let mol = molecule::molecule::Molecule::from_smiles("c1ccccc1CN");
+        let mol = molecule::Molecule::from_smiles("c1ccccc1CN");
         let vv = VertexVec::init(vec![0, 1, 3, 5], mol.atoms.clone());
         let _ = vv[2].clone();
     }

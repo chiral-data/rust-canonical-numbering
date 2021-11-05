@@ -1,7 +1,8 @@
-/// One-step Partition Algorithm 
-///     use the first element as middle value to seperate all the elements into three parts
-///     purely math
-///
+// Copyright 2021 Chiral Ltd.
+// Licensed under the Apache-2.0 license (https://opensource.org/licenses/Apache-2.0)
+// This file may not be copied, modified, or distributed
+// except according to those terms.
+
 fn partition_once<T: std::cmp::PartialOrd>(
     indexes: &Vec<usize>,
     values: &Vec<T>
@@ -24,8 +25,8 @@ fn partition_once<T: std::cmp::PartialOrd>(
     (part_left, part_mid, part_right)
 }
 
-/// Partition elements recursively according to correlated values
-///     purely math
+
+/// Quicksort Algorithm: https://en.wikipedia.org/wiki/Quicksort
 pub fn partition_recursively<T: std::cmp::PartialOrd>(
     indexes: &Vec<usize>,
     values: &Vec<T>,
@@ -63,7 +64,7 @@ pub fn partition_recursively<T: std::cmp::PartialOrd>(
 }
 
 #[cfg(test)]
-mod test_partition {
+mod test_givp_partition {
     use super::*;
 
     #[test]
